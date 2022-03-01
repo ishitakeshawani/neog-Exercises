@@ -4,10 +4,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./styles.css";
+import uuid from "react-uuid";
 
 export default function App() {
   const [addresses, setAddresses] = useState([]);
   const [newAddress, setNewAddress] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     (async function () {
@@ -21,14 +23,12 @@ export default function App() {
   }, [newAddress]);
 
   async function addData() {
-    await axios
-      .post("/api/addresses", { address: { city: newAddress } })
-      .then(function (response) {
-        console.log(response.data);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+    try {
+      await axios.post("/api/addresses", { address: { city: newAddress } });
+      setError("");
+    } catch (e) {
+      setError(e.message);
+    }
   }
 
   return (
@@ -45,6 +45,7 @@ export default function App() {
         }}
       />
       <button onClick={addData}> Save Address </button>
+      <p>{error}</p>
       <ul>
         {addresses.map((address) => (
           <li key={address.id}>{address.city}</li>
