@@ -10,19 +10,20 @@ function WishList() {
   const [wishText, setWishText] = useState("");
   const [wishList, setWishList] = useState([]);
 
+  const handleWishAdd = () => {
+    setWishList((list) => [...list, { id: uuid(), wish: wishText }]);
+    setWishText("");
+  };
+
+  useEffect(() => {
+    console.log(localStorage.getItem("wishlist"));
+    setWishList(JSON.parse(localStorage.getItem("wishlist")) || []);
+  }, []);
+
   useEffect(() => {
     localStorage.setItem("wishlist", JSON.stringify(wishList));
     console.log("data updated");
   }, [wishList]);
-
-  useEffect(() => {
-    console.log(localStorage.getItem("wishlist"));
-  }, [wishList]);
-
-  const handleWishAdd = () => {
-    setWishList((list) => list.concat({ id: uuid(), wish: wishText }));
-    setWishText("");
-  };
 
   const handleWishInput = (event) => setWishText(event.target.value);
 
