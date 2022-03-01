@@ -8,21 +8,32 @@ import "./styles.css";
 export default function App() {
   const [data, setData] = useState([]);
   const [loader, setLoader] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    setLoader(true);
-    axios.get("/api/products").then((res) => {
-      setLoader(false);
-      setData(res.data.products);
-    });
+    async function fetchData() {
+      try {
+        setLoader(true);
+        const {
+          data: { products }
+        } = await axios.get("/api/products");
+        setLoader(false);
+        setData(products);
+        setError("");
+      } catch (e) {
+        setError(e.message);
+      }
+    }
+    fetchData();
   }, []);
 
   return (
     <div className="App">
       <h1> Showcase Products </h1>
       {loader && <div>Loading..wait please</div>}
+      <div style={{ color: "white" }}>{error}</div>
       {data.map((val) => (
-        <div className="card product-card">
+        <div className="card product-card" key={val.id}>
           <div className="card-padding">
             <img className="product-img" src={val.image} alt="" />
             <div className="product-card-title bold-font-weight">
@@ -32,11 +43,11 @@ export default function App() {
               <span className="gray-color">MRP:</span> {val.price}
             </div>
             <div className="rating small-fontsize">
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="far fa-star"></i>
-              <i class="far fa-star"></i>
+              <i className="fas fa-star"></i>
+              <i className="fas fa-star"></i>
+              <i className="fas fa-star"></i>
+              <i className="far fa-star"></i>
+              <i className="far fa-star"></i>
             </div>
           </div>
           <div className="product-card-footer pink-color">
