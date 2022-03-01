@@ -8,27 +8,30 @@ import "./styles.css";
 export default function App() {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   async function getData() {
-    setLoading(true);
-    await axios
-      .get("/api/users/")
-      .then((res) => {
-        setLoading(false);
-        setList(res.data.users);
-      })
-      .catch((e) => console.log("error", e));
+    try {
+      setLoading(true);
+      const {
+        data: { users }
+      } = await axios.get("/api/users/");
+      setLoading(false);
+      setList(users);
+    } catch (e) {
+      setError(e.message);
+    }
   }
   return (
     <div className="App">
       {loading && <p>loading</p>}
+      <div>{error}</div>
       <button onClick={getData}>get data</button>
       <div>
         {list.map((user) => (
-          <li> {user.name} </li>
+          <li key={user.id}> {user.name} </li>
         ))}
       </div>
     </div>
   );
 }
-
